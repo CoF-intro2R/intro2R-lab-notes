@@ -1,0 +1,1 @@
+Sitemap: https://CoF-intro2R.github.io/intro2R-lab-notes/sitemap.xml
