@@ -1,0 +1,438 @@
+---
+title: "CoF Intro2R Week 1"
+subtitle: "Setting up a workflow"
+from: markdown+emoji
+---
+
+# Introductions
+
+**Instructor**: Dusty Gannon
+
+- MS Statistics, OSU
+- PhD Botany and Plant Pathology, OSU
+
+## Expertise
+
+- Statistics
+- Pollination ecology
+- Population biology and ecology
+- R
+- Stan/JAGS
+- C++
+- LaTeX
+- python(ish)
+
+
+# What is R?
+
+- A computing language
+    - Object oriented (somewhat loosely)
+        - Objects have *classes*
+    - Interpreted language (versus compiled)
+
+## Why R?
+
+- Statistical analysis
+- Relatively easy to learn
+- Excellent tools for cleaning, formatting, and analyzing tabular data
+
+# Setting up your workspace
+
+- **Adopt or create a file naming convention**. You can create your own, but some general guidelines include:
+    - :exclamation: No spaces. Instead use `-` or `_`. E.g. `my_file.txt`
+    - Dates can be sorted easily using *yyyymmdd* or *yymmdd* format. E.g. `20240903_my_file.txt`
+    - Here are some more tips: [https://datamanagement.hms.harvard.edu/plan-design/file-naming-conventions](https://datamanagement.hms.harvard.edu/plan-design/file-naming-conventions). Ignore their *versioning* advice. We will use `git` for version control.
+
+- **Adopt a project organization convention**. For example:
+
+```{mermaid}
+graph LR
+    A(Projects) --> B(project 1) & C(project 2)
+    B --> D(Data) & E(Writing) & F(R) & G[README.txt]
+    E --> P[manuscript.docx]
+    D --> H[dat1.csv] & I[README.txt]
+    C --> J(Data) & K(Writing) & L(Python) & M(R) & N(Rmds) & O[README.txt]
+    
+classDef file fill:#FFFFFF,stroke:#FFFFFF;
+class G,H,I,O,P file
+```
+
+:::{.callout-note icon=false}
+
+:thinking_face: Why is this important?
+
+:::
+
+
+## Taking project organization to the next level
+
+Collaboration is an important aspect of modern science. How do we work collaboratively on code? Let's see the importance of some of the tools you will be introduced to with an example.
+
+:::{.callout-note icon=false title="Your turn"}
+
+1. Open your system's file manager (Finder for Mac, File Explorer for Windows). Inside your `Documents` directory, create a new folder called `CoF_intro2R`. *Note the use of `-` or `_` in place of spaces*.
+2. Inside this folder, create another called `Lab` and yet another inside that called `Day1`. 
+3. Inside of the `Day1` folder, create a new, blank text file. Copy the following text into the file:
+
+```
+a,b,c
+1,2,3
+```
+
+4. Save the file as `eg.csv`.
+
+What is the name of the .csv file you just created?
+
+5. Open RStudio.
+:::
+
+
+
+:::{.callout-warning icon=false title="Answers" collapse=true}
+
+- Local name: `eg.csv`
+- Full name: Something along the lines of `N:\Users\<username>\Documents\CoF_intro2R\Lab\Day1\eg.csv`
+
+:::
+
+### Absolute vs. relative paths
+
+- **Relative paths**: Paths to a location that is *relative* to a specified location, such as the location of the current document or a project directory.
+- **Absolution paths**: Paths to files and locations relative to the root of the file system.
+
+
+## A short aside: Navigating RStudio
+
+- 4 *Panes*
+    - Console
+    - Editor - Where you will edit R scripts and other documents
+    - Environment - Where you can see objects stored in memory
+    - Files/Viewer - Where you can navigate the file system and see outputs of plots and other visuals.
+    
+- Customizing the appearance (**Very important** :wink:)
+    - Tools -> Global options -> Appearance
+
+**Other important global options**
+
+- Tools -> Global options -> General
+    - In the **Workspace** and **History** settings, adjust the defaults to match the image below.
+    
+![](images/rstudio_settings.png)
+
+- If working on a Windows machine, change your default terminal to *PowerShell* or some similar bash-like terminal by going to Tools -> Global Options -> Terminal and change the options that says **New terminals open with...**.
+
+## Back to project organization
+
+testing
+
+::: {.callout-note title="Your Turn" icon=false}
+
+In the terminal tab of the console pane, type
+
+```bash
+pwd
+```
+
+Compare the result to your neighbor's result. Do you get the same results?
+
+Explore the file tree of your machine using the command line. The only necessary command is `cd` (for 'change directory').
+
+```bash
+cd ../
+```
+
+will take you *up* one level (i.e., out one level from the nested structure of the file tree). To go further *down* or *into* a specific directory, use
+
+```bash
+cd <directory>
+```
+
+replacing `<directory>` with the directory name.
+
+Note, that you can use the `tab` key to *autocomplete* the directory name. So start typing the directory name, then press `tab` to autocomplete the name.
+
+Feel free to get lost a bit. If you do,
+
+```bash
+cd ~
+```
+
+will take you back home 🏠. 
+
+Finally, find your way to the `Day1` directory you created above.
+:::
+
+One of the things that trips people up when they first begin using programming languages to do data analysis is file path management. Good, consistent project organization combined with *RProjects* can relieve this headache substantially.
+
+::: {.callout-note title="Your Turn" icon=false}
+
+Let's practice loading data into R in order to see how file paths can trip people up and *break* code in many circumstances.
+
+1. Use the `pwd` command in the terminal to see the path to your data file, `eg.csv`.
+2. Open a new RScript file and type the following:
+
+```r
+( dat <- read.csv("<file-path>") )
+```
+replacing `<file-path>` with the path you got using `pwd` and appending `/eg.csv` onto the end of the path.
+
+3. *Run* the line using `CMD` + `ENTER`, or the "Run" button at the top of the script pane.
+4. Below this line, add the line from your neighbor's script. What happens?
+5. Delete or comment your neighbor's line out of your script and save the file to the `Day1` directory. Name the file `file_paths.R`.
+:::
+
+
+
+
+### A better way
+
+::: {.callout-note icon=false title="Your Turn"}
+
+1. In the upper right of RStudio, find the Project dropdown menu. Select `Open Project` and navigate to your new `CoF_intro2R/Labs` directory. Open it as an R project.
+2. Open the `file_paths.R` script. Type `getwd()` (for *get working directory*). What do you notice?
+3. Replace your previous line with the *relative file path* to the data. What do you notice about the line in your script and your neighbor's?
+4. As an alternative to the simple relative path, you can use the `here` package for R. To do this, first install the `here` package using
+
+```r
+install.packages("here")
+```
+in the R console.
+
+5. Add the following line to your script, replacing `<relative-path>` with the path to the `eg.csv` file from the root of the project directory.
+
+```r
+here::here()
+dat2 <- read.csv(here::here("<relative-path>"))
+all.equal(dat, dat2)
+```
+🤔 Does the first command, `here::here()`, give the same result for you and your neighbor?
+
+:::
+
+:::{.callout-warning icon=false title="Answer" collapse=true}
+Using `here::here()` in the console will usually not give the same result for two people on two machines because their project directories are stored in different place (literally two different computers with different users).
+:::
+
+:::{.callout-note}
+The double-colon syntax, `package::function()`, as we are using with `here::here()` is a safer way of using functions from packages downloaded from the internet than loading the full library and then calling the function without prefacing with the package name. We will get into packages more later in the workshop, but for now, remember that we can use any function from a downloaded package using this syntax.
+:::
+
+# Git and GitHub
+
+## Key git vocabulary
+
+### Nouns
+- **repository/repo**: Effectively a folder/directory
+- **remote**: The version of the repo that is hosted on GitHub or some other web-based hosting platform
+- **local**: The version of the repo that is stored on your personal computer
+- **staging area**: A list of files that should be "tracked", or version controlled, using `git`.
+- **commit**: When used as a noun, a recorded change or set of changes to the repo.
+- **branch**[^1]: A separate record of changes to the repo. There is usually a `main` branch that serves as the reference and *feature* branches that can be merged with `main` once the edits to the repo are complete. Branches are useful for collaborative repositories.
+- **pull request**[^2]: A set of suggested changes to a repo that can be suggested by a collaborator or, if the repo is public, anyone on the internet. The suggestions can then be reviewed by the owner of the repo and merged or not. 
+
+
+### Verbs
+- **clone**: To *copy* a repo from GitHub that you have admin or collaborator privelages on
+- **fork**: To copy a repo from GitHub (or another host) that you *do not* have write priveleges to. The only way to contribute to a forked repo is through pull requests.
+- **pull**: To sync changes from the *remote* to your local repo
+- **push**: To sync changes from your *local* repo to the remote
+- **commit**: When used as a verb, a set of change for which you want to create a time-stamp/record of the repo at that point in time.
+- **commit message**:
+
+## A simple workflow
+
+```{mermaid}
+graph LR
+    A[fa:fa-github Initial state] -.-> D[fa:fa-github updated remote]
+    A -- clone to local --> B(fa:fa-laptop initial local)
+    B -- commit changes --> C(fa:fa-laptop updated local)
+    C -- push changes --> D
+    
+classDef remote fill:#ececec,stroke:#2d2926,color:#000000;
+classDef local fill:#81a9ad,stroke:#2d2926,color:#000000;
+class A,D remote
+class B,C local
+```
+
+
+### Multiple computers
+
+
+```{mermaid}
+graph TD
+    A[fa:fa-github Initial state] -.-> E
+    A -- clone to local 1 --> B(fa:fa-laptop initial local 1)
+    A -- clone to local 2 --> C(fa:fa-desktop initial local 2)
+    B -- commit changes --> D(fa:fa-laptop update1 to local 1)
+    D -- push to remote --> E[fa:fa-github update 1 to remote]
+    E -.-> H
+    E -- pull to local 2 --> F(fa:fa-desktop update 1 to local 2)
+    C -. fast forward .-> F
+    F -- commit changes --> G(fa:fa-desktop update 2 local 2)
+    G -- push to remote --> H[fa:fa-github update 2 to remote]
+    
+classDef remote fill:#ececec,stroke:#2d2926,color:#000000;
+classDef local1 fill:#81a9ad,stroke:#2d2926,color:#000000;
+classDef local2 fill:#537380,stroke:#2d2926,color:#FFFFFF;
+class A,E,H remote
+class B,D local1
+class C,F,G local2
+```
+
+## Using git and GitHub
+
+Let's get some practice with the `git` workflow while also introducing how your homeworks will be assigned.
+
+:::{.callout-note title="Your Turn" icon=false}
+1. Create a `Homework` directory inside your `CoF_intro2R` directory.
+2. Go to the Canvas site for this class, Week 1 module. Click the link provided on the Homework 1 page. "Accept" the assignment. This will take you to GitHub (it may ask you to sign in) and a newly created template repository for you. 
+3. *Clone* the repo to your local computer using one of the two methods below. Clone the repo into the `Homework` directory.
+4. Follow the homework instructions for steps 1-3.
+5. Push your changes up to the remote using one of the three methods below.
+:::
+
+### Using git from RStudio
+
+The most common `git` commands have been baked into the RStudio GUI. These include *adding* files to the *staging area*, *committing* and writing *commit messages*, *pushing*, and *pulling*.
+
+:::{.callout-danger}
+If you are working on a Windows machine, I have found that you often need to specify where your `git.exe` file is stored and point RStudio to that location. To do so, go to Tools -> Global Options -> Git/SVN, then either browse or supply the filepath to the git executable. For example, for those that downloaded `git` through GitHub Desktop, the `git.exe` is located in `C:/Users/<username>/AppData/Local/GitHubDesktop/app-<version>/resources/app/git/cmd/git.exe`.
+:::
+
+#### Cloning
+To *clone* a repo to your local computer, go to File -> New Project... -> Version Control -> Git. 
+
+Next, go to your GitHub repo and click the green "Code" button. Copy the HTTPs URL and paste it into the dialogue box from RStudio. You can then save it to a specific location. This will open the repo as an `RProject`.
+
+:::{.callout-note}
+If you set up your ssh keys before the course started (extra credit on homework 0), then be sure to clone your project from GitHub using the ssh protocol, not HTTPs.
+:::
+
+#### Pulling
+
+Except for immediately after the initial cloning step when you are copying the remote repo to your local machine, the first thing you should do upon opening a repo locally is *pull*. This merges any new edits that are saved on the remote that you don't have locally. This is easily accomplished in RStudio using the blue down arrow :arrow_down: on the Git pane.
+
+#### Committing
+
+In the upper right panel of RStudio, you will now see a `git` tab. 
+
+1. After making changes to files, click the green checkmark :heavy_check_mark: icon that says "commit" when you hover over it with your mouse. This will bring up a new dialogue box. 
+2. Check the box next to the file you changed and to which you want to commit the changes. You can see the changes made in the panel at the bottom.
+3. Write a *commit message* in the box that describes the changes made or the state the project is in. Ideally, you should be able to look at commit messages and use them to revert the project back to previous states if necessary.
+4. Press "commit".
+
+#### Pushing
+
+Once you are ready to merge your local changes with the remote repo, press the green up arrow :arrow_up: in the Git pane of RStudio. The remote repo will be updated with the changes you made during the working session.
+
+### Using GitHub Desktop
+
+GitHub Desktop gives the user a GUI with which to interact. To clone a repository to your local computer using GitHub Desktop, open GitHub Desktop and sign into your GitHub account.
+
+#### Cloning a repo
+
+Once signed into GitHub from GitHub Desktop, click `Clone a Repository from the Internet...`. GitHub Desktop should already be linked to your GitHub account, so you just need to search for the repo you want. Clone the repo to the local location you want using the `Choose` button to navigate to the local path. Then click `Clone`.
+
+#### Pulling
+
+1. Select the repo you want to work on. In the top-left corner of GitHub Desktop, you will see a drop-down menu. Click this and select the repository you want to pull changes into.
+
+2. In the top-center of the GitHub Desktop window, check that you are on the correct branch (e.g., `main` or `develop`). You can switch branches using the drop-down menu if needed[^1].
+
+3. On the toolbar at the top, click the `Fetch origin` button. This will check for any updates or changes made to the repository on GitHub.
+
+4. Once GitHub Desktop checks for updates, the `Fetch origin` button will change to `Pull origin` if there are any updates. Click the `Pull origin` button to download and apply the changes from the remote repository to your local copy.
+
+#### Committing changes
+
+1. Once you’ve made changes, open GitHub Desktop. In the Changes tab (on the left panel), you’ll see a list of modified files. Clicking on each file will show a *diff* view of what was added, deleted, or modified.
+
+2. At the bottom of the Changes tab, you’ll see a text box labeled `Summary (required)`. Enter a descriptive commit message that summarizes the changes you made or the state the repo is in. Again, you want to be able to use these messages to revert the repo back to an older version if necessary.
+
+    - If needed, you can add more details about the changes in the "Description" field, which appears below the summary box. This is helpful for providing more context about the changes.
+
+3. By default, all modified files are selected for the commit. If you don’t want to commit all the changes, uncheck the files you don’t want to include in this commit.
+
+4. After filling in the commit message and selecting the files you want to include, click the "Commit to `<branch name>`" button (usually labeled "Commit to main" or the name of your active branch). This will commit the changes locally.
+
+#### Pushing
+
+After committing the local changes, click the `Push origin` button that appears at the top after committing your changes.
+
+### Using git from the command line
+
+A final way to use `git` is from the command line. This is how `git` was initially inteded to be used, but GUIs have been developed over time.
+
+#### Cloning a repo
+
+To clone a repo to your local machine, first, navigate to where you want the repo clone to live.
+
+```bash
+cd <path-to-clone-location>
+```
+
+Then, use the `git` command `clone`.
+
+```bash
+git clone <repo-url>
+```
+
+You may be asked to provide pass keys or sign in, which may also happen any time you *pull* or *push*. To avoid this, set up SSH keys as described [here](https://happygitwithr.com/ssh-keys). 
+
+#### Pulling
+
+Upon opening a repo, it's a good idea to check for changes made to the remote. To do this, you can use
+
+```bash
+git fetch origin
+git status
+```
+which will check for changes and then give you a summary of which files are being tracked, which, have been modified, which are staged, etc. If the local is behind the remote, use
+
+```bash
+git pull
+```
+
+#### Committing changes
+
+To commit changes using the command line, you first need to add modified files to the *staging area*. To do this, use
+
+```bash
+git add <file_name>
+```
+
+or
+
+```bash
+git add -A
+```
+
+to add all modified files.
+
+Next, commit the modified files using
+
+```bash
+git commit <file_name> -m "type commit message in quotes after -m flag"
+```
+
+or
+
+```bash
+git commit -am "type commit message here"
+```
+
+to commit all changes made to all the staged files using the same message.
+
+#### Pushing
+
+As you might expect, to push changes up to the remote, you can use
+
+```bash
+git push
+```
+
+which will push all committed changes to GitHub.
+
+[^1]: We will not get into using branches much if at all in this workshop.
+
+[^2]: I will provide feedback on your homeworks using pull requests.
