@@ -9,6 +9,7 @@ website:
         text: Home
       - about.qmd
       - day1.qmd
+      - day4.qmd
 
 format:
   html:
