@@ -2,7 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://CoF-intro2R.github.io/intro2R-lab-notes/day1.html</loc>
-    <lastmod>2024-10-09T21:52:40.285Z</lastmod>
+    <lastmod>2024-10-29T21:08:22.467Z</lastmod>
+  </url>
+  <url>
+    <loc>https://CoF-intro2R.github.io/intro2R-lab-notes/day2.html</loc>
+    <lastmod>2024-10-29T20:42:08.536Z</lastmod>
+  </url>
+  <url>
+    <loc>https://CoF-intro2R.github.io/intro2R-lab-notes/day4.html</loc>
+    <lastmod>2024-10-29T21:08:06.833Z</lastmod>
   </url>
   <url>
     <loc>https://CoF-intro2R.github.io/intro2R-lab-notes/index.html</loc>
@@ -11,5 +19,13 @@
   <url>
     <loc>https://CoF-intro2R.github.io/intro2R-lab-notes/about.html</loc>
     <lastmod>2024-10-09T21:52:40.285Z</lastmod>
+  </url>
+  <url>
+    <loc>https://CoF-intro2R.github.io/intro2R-lab-notes/day5.html</loc>
+    <lastmod>2024-10-29T21:07:33.315Z</lastmod>
+  </url>
+  <url>
+    <loc>https://CoF-intro2R.github.io/intro2R-lab-notes/day3.html</loc>
+    <lastmod>2024-10-29T21:41:08.712Z</lastmod>
   </url>
 </urlset>
