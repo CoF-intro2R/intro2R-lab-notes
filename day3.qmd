@@ -1,0 +1,501 @@
+---
+title: "Week 3"
+subtitle: "A crash course in data wrangling"
+---
+
+# Data wrangling
+
+Data wrangling (cleaning, formatting, summarizing, and transforming data) may be one of the most time consuming components of any analysis you end up doing. Luckily, the `tidyverse` family of R packages makes data wrangling easy (or, at least eas*ier*). 
+
+:::{.callout-note title="Your Turn" icon=false}
+
+1. Create a new directory under `CoF_intro2R/Lab` called `Day3`.
+2. Go to the Week 3 module on Canvas and download the three datasets, `survey_data.csv`, `species_info.csv`, and `location_info.csv` to your `CoF_intro2R/Lab/Day3/` directory.
+:::
+
+# An introduction to the `tidyverse`
+
+The `tidyverse` is a collection of packages all used for loading, visualizing, and wrangling data. These include:
+
+- `dplyr` - For data summaries and wrangling
+- `forcats` - Tools for working with categorical data
+- `ggplot2` - For visualizing data
+- `lubridate` - Tools for working with dates
+- `purrr` - Tools to automate repetitive tasks
+- `readr` - Tools for reading data from and writing to disk
+- `stringr` - Tools for working with *strings* (i.e., a collection characters 'strung' together)
+- `tibble` - Tools for more flexible dataframe objects
+- `tidyr` - Tools for data wrangling and summaries
+
+## Transferring data to and from disk
+
+```{r}
+#| echo: false
+#| message: false
+
+library(tidyverse)
+
+survey_data <- read_csv(
+  here::here("Data/survey_data.csv"),
+  na = c(".", "")
+)
+
+```
+
+
+`readr` includes many tools for reading data into R from disk or writing data from R to disk. They all work pretty similarly, so let's get a sense of how they work by exploring the `readr::read_csv()` function.
+
+:::{.callout-note title="Your Turn" icon=false}
+
+1. Open RStudio and open your `CoF_intro2R/Lab` project.
+2. Read in the `survey_data.csv` dataset using `readr::read_csv()` and relative filepaths. For now, don't include any additional arguments to the function.
+3. Use `str()` to view the structure of the dataframe. 
+
+🤔 Do you notice anything odd or incorrect about the way the data were loaded? 
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+It is a bit undesirable that the `Time` and `Date` variables are read in as character variables. This is because the data use periods, `.`, to encode missing data, which R does not recognize as a missing data character.
+:::
+
+:::{.callout-note title="Your Turn" icon=false}
+
+Read through some of the documentation for `read_csv()` using `?read_csv()`. 
+
+🤔 How would we adjust our code to fix the unwanted behavior?
+
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+We can fix the unwanted behavior of reading `Time` in as a character by adding the argument `na = c(".", "")` to the `read_csv()` call to tell R that both periods and empty cells should be treated as missing data.
+:::
+
+Package `readr` also includes functions for *writing* to disk, which follow a similar structure (e.g., `write_csv()`). For more on this package, visit the documentation [https://readr.tidyverse.org/](https://readr.tidyverse.org/) or read through the [Data import](https://r4ds.hadley.nz/data-import) chapter of *R for Data Science* (Wickham et al. 2023).
+
+
+## Formatting column names
+
+After loading data into R, there will almost always be some formatting required. For example, note the sloppy column names for these datasets. There is a mixture of capitalization styles, sometimes we use spaces, sometimes underscores, etc. Let's fix this and use best practices for object names in R.
+
+
+### :camel: or :snake:?
+
+Current best practice in R (and writing code more generally) is to use either *camel case* :camel: or *snake case* :snake:. With camel case, each object name starts lower case and, if a more than one word makes up the name, the next words are capitalized. For example:
+
+```r
+# camel case with one word
+name <- object
+
+# camel case with more than one word
+nameOfObject <- object
+```
+
+Snake case, on the other hand, uses all lower-case letters and replaces spaces between words with underscores ("_"). For example:
+
+```r
+# snake case with one word
+name <- object
+
+# snake case with more than one word
+name_of_object <- object
+```
+
+You will see that I prefer snake case, but you can pick whichever works best for you.
+
+:::{.callout-note title="Your Turn" icon=false}
+
+1. Read through the documentation for the `dplyr::rename()` function using `?dplyr::rename()`.
+2. Rename the first column of the survey data using `rename()`:
+
+```r
+survey_data <- rename(
+    survey_data,
+    survey_id = `Survey ID`
+)
+```
+
+:thinking_face: What do you notice about how we needed to treat the old name inside of the `rename()` function?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+Because of the space in `Survey ID`, we had to wrap it in *backticks* in order for R to treat it as one name.
+:::
+
+The `rename()` function is great, but what if we want to rename a bunch of columns at the same time? For example, what if all (or many) of our column names have spaces in them and we want to replace all the spaces with an underscore? Typing out all the new names would be a hassle. Luckily, there is a better way.
+
+:::{.callout-note title="Your Turn" icon=false}
+
+1. Read the documentation for `rename_with()` using `?rename_with()`. 
+
+2. We also need to learn a function that can find and replace characters in a *string*. Read the documentation for `stringr::str_replace_all()`. 
+
+3. Attempt the following: assign the string "The Prime Directive" to a named object in R. Using `stringr::str_replace_all()`, remove all the spaces in the string.
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+
+```r
+pd <- "The Prime Directive"
+
+# replace all spaces with nothing
+(pd_nospaces <- str_replace_all(pd, pattern = " ", replacement = "_")
+```
+
+:::
+
+So, in order to replace all the spaces in all the names at once, we combine the `str_replace_all()` function with `rename_with()`.
+
+```{r}
+survey_data <- rename_with(
+    survey_data,
+    .fn = stringr::str_replace_all,
+    pattern = " ",
+    replacement = "_"
+)
+names(survey_data)
+```
+
+Finally, in order for the column names to follow snake case convention :snake:, we now need to convert all the capital letters to lowercase.
+
+:::{.callout-note title="Your Turn" icon=false}
+
+Use your new knowledge of the `rename_with()` function and what you learn from `?tolower()` to convert the capital letters to lower case in all instances in the column names of `survey_data`.
+
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+
+```r
+survey_data <- rename_with(
+    survey_data,
+    .fn = tolower
+)
+```
+:::
+
+We converted the column names to using snake case convention :snake: in two steps above, but let's see how to streamline this a bit for next time.
+
+#### A short aside to introduce "pipes" 
+
+There are two *pipe* operators in R, `|>` and `%>%`. This first is "native" to R (at least as of version 4.3.1), while the second comes with `tidyverse`, but they work in similar ways. Consider the code below:
+
+```{r}
+vec <- c(1:5)
+
+# now find the sum of the squared values greater than 4
+sum(Filter(function(x){x > 4}, sapply(vec, function(x){x^2})))
+
+```
+
+Run this code to verify it works. Now, compare to the following:
+
+```{r}
+sapply(vec, function(x){x^2}) |>
+    Filter(function(x){x > 4}, x = _) |>
+    sum()
+```
+Which is easier to read and follow? For most of us, the code with the pipes is much easier to understand.
+
+:::{.callout-note}
+Note the `_` character supplied to the `x` argument of `Filter()`. The underscore acts as a *placeholder* for the object that is being piped in from the previous operation. So, when we want to specify which argument we want to assign the piped object to, we use `argument = _` for the base R pipes, and `argument = .` for `tidyverse` pipes.
+:::
+
+:::{.callout-note title="Your Turn" icon=false}
+
+Load the two remaining datasets and clean up their column names using what you learned in the two subsections above on pipes and renaming.
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+
+```r
+sp_info <- read_csv("Day3/species_info.csv", na = c(".", "")) %>%
+  rename_with(
+    .fn = str_replace_all,
+    pattern = " ",
+    replacement = "_"
+  ) %>%
+  rename_with(
+    .fn = tolower
+  )
+```
+:::
+
+```{r}
+#| echo: false
+#| message: false
+
+survey_data <- survey_data %>% 
+  rename_with(tolower)
+
+sp_info <- read_csv("Data/species_info.csv", na = c(".", "")) %>%
+  rename_with(
+    .fn = str_replace_all,
+    pattern = " ",
+    replacement = "_"
+  ) %>%
+  rename_with(
+    .fn = tolower
+  )
+
+loc_info <- read_csv("Data/location_info.csv", na = c(".", "")) %>%
+  rename_with(
+    str_replace_all,
+    pattern = " ",
+    replacement = "_"
+  ) %>% rename_with(
+    tolower
+  )
+
+```
+
+
+## Long versus wide data formats
+
+Notice now that, in the `survey_data` dataframe, the column `species_observed` includes all the species observed during a given survey in a comma-separated list. Generally, we like to work with data in "long format," with one record/observation per row. Let's do some wrangling to get these data into long format.
+
+:::{.callout-note title="Your Turn" icon=false}
+
+🤔 Without knowing the exact code, you should still be able to describe the steps you want to take. Work with your neighbor to describe a few steps you could take to reshape these data.
+
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+1. Split the comma-separated values into separate columns.
+2. Pivot longer, stacking the newly-created columns.
+:::
+
+Let's now see some code to reshape these data.
+
+First, let's split the column into multiple, one for each observed species. The package `tidyr` has a nice helper function for this called `separate_wider_delim()`. Check out the documentation for this function.
+
+```{r}
+survey_data %>% 
+  separate_wider_delim(
+    cols = species_observed,
+    delim = ", ",
+    names_sep = "_"
+  )
+```
+Let's use our new knowledge of pipes and, rather than creating multiple intermediate objects, pipe this result into our next operation: `tidyr::pivot_longer()`.
+
+```{r}
+survey_data %>% 
+  separate_wider_delim(
+    cols = species_observed,
+    delim = ", ",
+    names_sep = "_"
+  ) %>%
+  # next operation is to pivot the two species_observed_
+  # columns to a single column
+  pivot_longer(
+    cols = c(species_observed_1, species_observed_2),
+    names_to = "record",
+    values_to = "species"
+  )
+```
+
+Finally, we don't really need the `record` column, we just needed to give R somewhere to put the column names. So, let's see how to remove a column using the `dplyr::select()` function.
+
+```{r}
+survey_data <- survey_data %>% 
+  separate_wider_delim(
+    cols = species_observed,
+    delim = ", ",
+    names_sep = "_"
+  ) %>%
+  pivot_longer(
+    cols = c(species_observed_1, species_observed_2),
+    names_to = "record",
+    values_to = "species"
+  ) %>% 
+  select(!record)
+```
+
+## Merging datasets
+
+Our next step in preparing the data is to combine all the information into one data frame. To do this, we will use `dplyr::left_join()`, but you should read the documentation for `?left_join()` to see the other types of joins that are possible.
+
+We will join the `species_info` data with the `survey_data` dataframe first. 
+
+:::{.callout-note title="Your Turn" icon=false}
+
+1. Look through the columns in `survey_data` and `species_info`. 🤔 Which columns can we use to merge the two datasets? 
+2. 🤔 How would we pipe this result into another join to add in the location data?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+1. We can join by the `species` column, then the `location` column.
+
+```r
+survey_data <- left_join(
+    survey_data,
+    sp_info,
+    by = "species"
+) %>%
+  left_join(
+      .,
+      loc_info,
+      by = "location"
+  )
+```
+:::
+
+```{r}
+#| echo: false
+
+survey_data <- left_join(
+    survey_data,
+    sp_info,
+    by = "species"
+) %>%
+  left_join(
+      .,
+      loc_info,
+      by = "location"
+  )
+```
+
+
+## Adding and subsetting columns
+
+There are two key functions in `tidyverse` used for selecting or adding columns to an existing dataframe or tibble: `dplyr::select()`, for selecting columns, and `dplyr::mutate()` for adding columns to a dataframe. `select()` is relatively easy to use. For example, try:
+
+```{r}
+survey_data %>% select(c(date, time))
+```
+
+The `c()` function can be used to specify a list/vector of columns, but we can also use `:` to specify a sequence of columns.
+
+```{r}
+survey_data %>% select(date:time)
+```
+
+There are also a handful of useful helper functions. For example,
+
+```{r}
+survey_data %>% select(contains("_"))
+```
+
+Use `?dplyr::select()` to see a full list of helper functions.
+
+Let's also see how to add columns in `tidyverse` syntax.
+
+:::{.callout-note title="Your Turn" icon=false}
+
+1. Let's add a column for the time spent surveying to the survey data using base R syntax.
+
+```r
+survey_data$hrs_searched <- c(1.5, 2, 1.75, 1) %>%
+    rep(., each = 2)
+```
+
+2. Now create a column that is the "person-hours", that is, the time spent surveying multiplied by the number of surveyers.
+
+```r
+# person-hours
+survey_data$person_hrs <- 
+    survey_data$hrs_searched * survey_data$num_observers
+```
+
+3. Now that you have done that the base R way, remove those two new columns, `hrs_searched` and `person_hrs`, using `dplyr::select()`.
+
+```r
+survey_data <- select(
+    survey_data,
+    !c(hrs_searched, person_hrs)
+)
+```
+4. Let's add those columns back in using `dplyr::mutate()`.
+
+```r
+survey_data <- survey_data %>% mutate(
+    hrs_searched = c(1.5, 2, 1.75, 1) %>%
+        rep(., each = 2),
+    person_hrs = num_observers * hrs_searched
+)
+```
+:::
+
+
+```{r}
+#| echo: false
+
+survey_data <- survey_data %>% mutate(
+    hrs_searched = c(1.5, 2, 1.75, 1) %>%
+        rep(., each = 2),
+    person_hrs = num_observers * hrs_searched
+)
+```
+
+
+## Using the `stringr` package
+
+We covered some of the basics of strings last week. This week, we will see what the `stringr` package has to offer, beyond some of the base R functionality.
+
+### Motivating example
+
+Imagine you have data on trees for which the forest type, old growth versus second growth, is "tied up" in the tree identifier. For example,
+
+
+
+| Tree_ID | DBH |
+| -------- | -------- |
+| tree_1-old-growth   | 50     |
+| tree_2-old-growth | 46 |
+| $\vdots$ | $\vdots$ |
+| tree_99-second-growth | 15 |
+| tree_100-second-growth | 18 |
+| $\vdots$ | $\vdots$ |
+
+How would we extract the tree identifier and separate it from the forest type?
+
+### Regular expressions
+
+:::{.callout-note title="Your Turn" icon=false}
+
+Spend 5 minutes skimming the help page on regular expressions with `stringr`: [https://stringr.tidyverse.org/articles/regular-expressions.html](https://stringr.tidyverse.org/articles/regular-expressions.html).
+
+🤔 How might we "match" the substring of interest, `tree_`, plus one or more numbers?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+
+One way to do this is:
+```r
+str_extract(tree_id, pattern = "tree_\\d+")
+```
+
+Another way would be:
+```r
+str_split(tree_id, pattern = "-")
+```
+:::
+
+
+
+## Working with dates
+
+The final topic we will cover today is working with dates. Dates are common data entries (e.g., sampling date, date of experiment, etc.), but they can also be difficult to work with in R due to the ways dates are commonly formatted. For example, dates are usually combinations of numbers and characters, such as "09/30/2024" or "30 Sept. 2024". Thus, they are usually read into R as character strings, but we might want to treat them as a continuous, numeric variable since each unique data is one day apart. The `lubridate` package is quite handy for this sort of thing.
+
+:::{.callout-note title="Your Turn" icon=false}
+
+1. Convert the `date` column of `survey_data` to a vector of class `date` using the function `lubridate::mdy()`.
+2. Convert the new date column to numeric using `as.numeric()`. What do you get?
+
+🤔 What is the reference date used by `lubridate`? I.e., what date would you need to pass through `as.numeric()` in order for R to return `0`?
+> Hint: Try to convert the numeric value from above back into a date using a `lubridate` function.
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+January 1, 1970 is the reference date.
+
+```r
+mdy("01/01/1970") |> as.numeric()
+```
+:::
+
+
+
+
+
+

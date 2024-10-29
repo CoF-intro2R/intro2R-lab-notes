@@ -1,0 +1,511 @@
+---
+title: "Week 2"
+subtitle: "R basics"
+---
+
+# Basic operations
+
+While much more versatile, R can be used as a calculator with some basic syntax.
+
+- `+` - addition
+- `-` - subtraction
+- `*` - multiplication
+- `/` - division
+- `^` - raise to a power. E.g., `2^4` will compute $2^4 = 16$
+
+:::{.callout-note title="Your Turn" icon=false}
+
+What do the `%%` and `%/%` operators do? Try experimenting a bit. For example, what's the result of
+
+```r
+7 %% 3
+```
+
+and
+
+```r
+7 %/% 3
+```
+? Repeat with some different values to see if you can figure it out.
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+- `%%` - Gives the remainder of a division operation (i.e., "x modulo y").
+- `%/%` - Gives the integer division of the left hand-side over the right-hand side (i.e., the "floored" result of $x/y$.)
+:::
+
+## Variable assignment
+
+One of the key aspects of coding in R is *assignment*. That is, assigning objects or values to a name (we will come back to objects shortly).
+
+Any of `=`, `<-`, and `->` can act as assignment operators. For example, in
+
+```{r}
+a <- 100
+b = 100
+100 -> c
+```
+
+all of `a`, `b`, and `c` are assigned the value 100. We can then use these objects in other computations. 
+
+:::{.callout-note title="Your Turn" icon=false}
+
+Create a new object named `ans` that is equal to $\frac{a + b}{c}$. Now, print `a`, `b`, `c`, and `ans` by simply typing the names of the objects into the console and pressing `ENTER`. Did the values of any of the original variables (`a`, `b`, and `c`) change?
+
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+None of the original values change.
+Code:
+```r
+ans <- (a + b) / c
+```
+:::
+
+# Basic data types
+
+There are a handful of basic data types in R, but the ones you will encounter most ofter are:
+
+- integer
+- numeric
+- character
+- logical
+
+:::{.callout-note title="Your Turn" icon=false}
+To find out the type or *class* of an object, you can use `class(object)`.
+- What class is assigned to the special objects (called *constants*) `TRUE` and `FALSE`? 
+- Run the code `z <- 2 + 3i`. What class is assigned to `z`?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+- The constants `TRUE` and `FALSE` get the class `logical`.
+- `z` is assigned the class `complex`.
+:::
+
+## Classes can get "elevated"
+
+Classes may change in R depending on what operation an object or value is involved in. Let's explore some scenarios in which this happens.
+
+:::{.callout-note title="Your Turn" icon=false}
+Create the following two objects in R:
+```r
+a <- 2L
+b <- 2
+```
+1. What class is assigned to each of these objects?
+
+Now, create a third object that is the sum of `a` and `b`.
+
+```r
+c <- a + b
+```
+
+2. What class is assigned to `c`? What happened?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+1. `a` has class `integer` and `b` has class `numeric`.
+2. `c` has class `numeric`, meaning that `a` got elevated to `numeric` during this operation.
+:::
+
+:::{.callout-note title="Your Turn" icon=false}
+Let's do another example, one that comes in handy for me all the time. What do you get when you type the following in the console and press enter?
+
+```r
+TRUE + FALSE
+```
+
+What about
+
+```r
+FALSE + FALSE + FALSE
+```
+
+or
+
+```r
+TRUE + TRUE
+```
+? How are the constants `TRUE` and `FALSE` being treated when involved in arithmetic operations?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+`TRUE` is given a value of 1 and `FALSE` is given a value of 0 when involved in arithmetic operations.
+:::
+
+# Objects and object classes
+
+While there are some basic data types, there are many many classes of objects in R. To R, *everything* is an object, each with a specified class, and the class determines what sorts of operations an object can be involved in. Some other examples of object classes include:
+
+- `data.frame`
+- `matrix`
+- `array`
+
+:::{.callout-note title="Your Turn" icon=false}
+
+In RStudio, type `is.` in the console and wait for the pop-up window of suggestions. Scroll through the possible classes.
+
+What class is returned when you type `class(sum)`? What does this tell you?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+This tells us that functions are just another object class.
+:::
+
+## Methods for classes
+
+Classes of objects have certain *methods* defined for them. These are generic functions, such as `summary()` or `print()`, that have specific instructions for how to handle different classes of objects. In order to see what functions work with a specific class of object, you can use the function `methods()`. This will give you an idea of what sorts of things you can do with a given object class.
+
+:::{.callout-note title="Your Turn" icon=false}
+
+Type `?methods()` into the console and press `ENTER` in order to learn how to use the function. How many methods are defined for the `data.frame` class? 
+
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+There are 64 methods defined for the `data.frame` class.
+:::
+
+# Dataframes, vectors, and matrices
+
+Some of the most common objects used in the R language are *dataframes*, *vectors*, and *matrices*. These are objects that can store *a lot* of data in a logical format. You have already seen how to read in data from a csv file in week 1. What we didn't cover was that the data were automatically stored in a *dataframe* when loaded into the environment.
+
+## Working with vectors
+
+Vectors are essentially lists of values. They can be lists of `character` values, `numeric` values, `logical` values, or even more general lists of just about any object type there is. These most general versions of vectors are called *lists* in R. 
+
+```{r}
+#| echo: false
+
+# numeric vector
+v <- c(1, 2, 3)
+
+# logical vector
+lv <- v < 2
+
+# character vector
+pets <- c("dog", "cat", "bunny")
+
+# list is a special kind of vector
+l <- list(v, lv, pets)
+```
+
+
+:::{.callout-note title="Your Turn" icon=false}
+
+Run the following code.
+
+```r
+# numeric vector
+(v <- c(1, 2, 3))
+
+# logical vector
+(lv <- v < 2)
+
+# character vector
+(pets <- c("dog", "cat", "bunny"))
+
+# list is a special kind of vector
+(l <- list(v, lv, pets))
+```
+
+🤔 How did we create the logical vector?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+The less-than sign, `<`, allowed us to ask whether each element of `v` was less than 2, resulting in a logical vector.
+:::
+
+Accessing elements of a vector is one of the most important things to know. Indexing in R is 1-based, meaning the first element of a vector is considered to be in position 1 (rather than position 0, like many other languages).
+
+:::{.callout-note title="Your Turn" icon=false}
+
+To access elements of a list or vector, we use square brackets, `[]`. Try the following:
+
+```r
+pets[1]
+lv[3]
+v[c(1,2)]
+# or, the : character can make a range of values
+v[1:3]
+```
+
+🤔 What happens if we make these negative? For example, `pets[-1]`?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+When the element number indicators are negative, R returns everything *except* that index.
+:::
+
+We can also combine multiple vectors into one. For example, try
+
+```{r}
+w <- c(4, 5, 6)
+vw <- c(v, w)
+vw
+```
+
+## Working with dataframes and matrices
+
+Matrices and dataframes are 2-Dimensional generalizations of vectors, as if stacking vectors on top of each other or side by side. For example, two vectors,
+
+$$
+{\bf v} = \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix},\ \ {\bf w} = \begin{bmatrix} 4 \\ 5 \\ 6\end{bmatrix}
+$$
+
+can be concatenated into a single matrix
+
+$$
+{\bf M} = \begin{bmatrix}
+1 & 4\\
+2 & 5\\
+3 & 6
+\end{bmatrix}.
+$$
+
+In R, we can also have `character` and `logical` matrices.
+
+:::{.callout-note title="Your Turn" icon=false}
+Let's get familiar with these common R data structures. 
+
+1. Create a dataframe in R from scratch.
+
+```r
+# combine vectors from above into a dataframe
+df <- data.frame(
+    v = v,
+    w = w
+)
+
+# View the dataframe
+View(df)
+
+# convert to a matrix
+M <- as.matrix(df)
+M
+```
+
+Note how we can change the class of `df` and convert it into a matrix.
+
+2. Let's create a new dataframe based on some different vectors.
+
+```r
+# add pets vector from above to a new dataframe
+df2 <- data.frame(
+    pet = pets,
+    number = c(1, 0, 0)
+)
+df2
+
+# now convert into a matrix
+mat2 <- as.matrix(df2)
+mat2
+```
+
+🤔 What happened when you converted the second dataframe into a matrix? What does this tell you about dataframes versus matrices?
+
+> Hint: Use `class(df2$number)` and `class(mat2[, 2])`.
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+Upon converting a dataframe with numeric and character columns to a matrix, the numeric columns get elevated to a character so that all columns in the matrix are characters. This tells us that dataframes are more flexible than matrices and can store multiple data types in different columns.
+:::
+
+### Accessing elements, columns, and rows
+
+Again being able to access, add, or remove elements (or even whole columns/rows) from data structures is one of the most important skills to learn. Try the following:
+
+:::{.callout-note title="Your Turn" icon=false}
+```r
+mat2
+mat2[1,2]
+mat2[1, ]
+mat2[, 2]
+mat2[, "pet"]
+mat2[, "number"]
+```
+🤔 Why do we need the comma when accessing components of a matrix? What goes before the comma and what goes after?
+
+```r
+df2
+df2[1,2]
+df2[1, ]
+df2[, 2]
+df2$number
+df2$pet
+```
+As you can see, there are multiple ways to access different components of dataframes and matrices.
+
+🤔 Does the `$` syntax work for matrices with named columns, like `mat2`?
+
+:::
+
+## Missing values
+
+You will almost certainly have some missing data in your own graduate studies, either due to faulty instrumentation, a lapse in focus, or one of many other reasons. That is normal. So normal, that R uses a constant (a special object) `NA` to encode missing data. It's relatively easy to convert other codes for missing data (e.g., `999` or a blank cell in an excel spreadsheet) to `NA` values, once data are loaded into R or during the loading process. There are even methods designed to identify missing values. For example, try:
+
+```{r}
+is.na(c(2, 3, NA, 5, 6))
+```
+
+:::{.callout-note title="Your Turn" icon=false}
+`NA` values can have unintended consequences depending on what functions you are using in your analysis code. For example, try the following:
+
+```r
+a <- c(2, 3, NA, 5, 6)
+sum(a)
+```
+
+What do you get? What if you wanted to sum up all the values that are present and not missing? Type `?sum()`. What does the function documentation say to do to accomplish this?
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+To get the total of the non-missing values, we can modify the code above to read `sum(a, na.rm = TRUE)`.
+:::
+
+:::{.callout-note}
+ Note that the functions `mean()` and `sd()`, which take the mean and standard deviation of a vector of values, respectively, behave similarly.
+:::
+
+# Vectorization
+
+R is optimized to work with vectors, matrices, and *arrays* (matrices but in even more dimensions). This is done through *vectorized* functions which apply the same function to all the elements of a vector or array at once. 
+
+:::{.callout-note title="Your Turn" icon=false}
+
+Let's use some of the vectors from above as examples. 
+
+```r
+# adding a constant to all the values in a vector
+v + 10
+
+# multiplying all elements by a constant
+v * 2
+
+# raising all elements to a power
+v ^ 2
+
+# many functions are also vectorized
+sqrt(v)
+```
+
+🤔 What happens if you perform simple arithmetic operations with two vectors?
+
+```r
+# addition
+v + w
+
+# multiplication
+v * w
+
+# powers
+v ^ w
+```
+
+🤔 What happens if you perform simple arithmetic operations with mixtures of vectors and matrices or dataframes?
+
+```r
+# vector plus a matrix?
+v + mat
+
+# multiplaction?
+v * mat
+
+# division?
+v / mat
+mat / v
+```
+
+🤔 What if the vector and matrix have differing numbers of rows?
+
+```r
+v2 <- c(v, 2)
+v2 + mat
+```
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+- When performing simple arithmetic operations on two vectors/matrices/dataframes with the same dimensions, R adds/divides/etc. corresponding elements.
+- When performing simple arithmetic operations on a mixture of vectors and matrices where the length of the vector matches the number of rows in the matrix, R adds the vector to each column of the matrix, adding corresponding elements along the rows of each column.
+- If the matrix and vector have differing numbers of rows, R starts to *recycle* the vector elements, starting with the upper left of the matrix as element 1, then moving down the rows before moving to the next column.
+:::
+
+
+# Working with "strings"
+
+Learning how to work with strings is extremely valuable and can save you a lot of manual labor. We will see some more of how useful it can be next week, but first, let's cover some basics.
+
+## Double versus single quotes
+
+Most of the time, you can use double or single quotes interchangeably.
+
+```{r}
+str1 <- "This is a string."
+str2 <- 'This is a string.'
+
+# are they the same?
+str1 == str2
+```
+
+*However*, if you want to include quotes inside the string, you need to use single quotes.
+
+```{r}
+str3 <- 'This is a "string".'
+str3
+```
+
+Note that *printing* a string, as we did above with `str3`, is different from *writing* the string itself. To do that, we want
+
+```{r}
+writeLines(str3)
+```
+
+:::{.callout-note title="Your Turn" icon=false}
+
+🤔 How did R internally modify our string `str3` above?
+
+:::
+
+:::{.callout-warning title="Answer" icon=false collapse=true}
+R added *escape characters*, `\` to the string to *escape* the special characters.
+:::
+
+## Special characters and escapes
+
+There are a handful of special characters, including things like `\`, `'`, and `"`. Other special characters you are likely to use are `\n` and `\t`, which are newline and tab characters, respectively. For example:
+
+```{r}
+str4 <- "Using\nnewline\ncharacters"
+writeLines(str4)
+```
+
+To *escape* these special characters and use them literally in your string, precede them with `\`.
+
+```{r}
+writeLines("\'Escape\'")
+writeLines("\"Escape\"")
+writeLines("Some LaTeX: $\\bar{x} = \\frac{1}{n}\\sum_{i=1}^n x_i$")
+```
+
+We can also combine strings with other R output. For example:
+
+```{r}
+approx_pi <- round(pi, digits = 2)
+
+writeLines(
+    paste0("I ate some ", approx_pi, ".\n")
+)
+
+# using paste() with a separator between the strings
+writeLines(
+    paste("Lions", "Tigers", "and Bears", "oh my!", sep = ", ")
+)
+```
+
+# Final thoughts
+
+- Everything in R is an object with a specified class.
+- Get used to working with dataframes and vectors. They will be your bread and butter for most analyses!
+
+
+

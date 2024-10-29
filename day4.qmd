@@ -1,8 +1,6 @@
 ---
-title: "Intro2R Week 4"
+title: "Week 4"
 subtitle: "Data visualization"
-date: "8 October 2024"
-format: md
 toc: true
 ---
 

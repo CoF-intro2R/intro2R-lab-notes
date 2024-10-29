@@ -1,5 +1,5 @@
 ---
-title: "CoF Intro2R Week 1"
+title: "Week 1"
 subtitle: "Setting up a workflow"
 from: markdown+emoji
 ---
