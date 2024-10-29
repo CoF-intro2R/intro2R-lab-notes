@@ -2,6 +2,8 @@
 title: "CoF-intro2R-workshop"
 ---
 
-![](images/forest_pic.jpg){width=50% fig-align="center"}
+![](images/forest_pic.jpg){width=60% fig-align="center"}
 
 This site hosts lab materials for an introductory R course I designed for incoming graduate students in the College of Forestry at Oregon State University. Feel free to use any of the material that suits your educational needs.
+
+For more information on my teaching, research, and consulting, check out my [website](https://dusty-gannon.github.io/).
