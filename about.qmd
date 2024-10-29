@@ -1,5 +1,0 @@
----
-title: "About"
----
-
-This site hosts lab materials for an introductory R course I designed for incoming graduate students in the College of Forestry at Oregon State University. Feel free to use any of the material that suits your educational needs.

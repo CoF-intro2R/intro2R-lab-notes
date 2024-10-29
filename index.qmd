@@ -2,6 +2,6 @@
 title: "CoF-intro2R-workshop"
 ---
 
-This is a Quarto website.
+![](images/forest_pic.jpg){width=50% fig-align="center"}
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+This site hosts lab materials for an introductory R course I designed for incoming graduate students in the College of Forestry at Oregon State University. Feel free to use any of the material that suits your educational needs.
