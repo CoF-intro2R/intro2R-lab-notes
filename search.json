@@ -193,13 +193,6 @@
     "href": "index.html",
     "title": "CoF-intro2R-workshop",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
     "text": "This site hosts lab materials for an introductory R course I designed for incoming graduate students in the College of Forestry at Oregon State University. Feel free to use any of the material that suits your educational needs."
   },
   {
